@@ -27,8 +27,10 @@ tradeGui:GetPropertyChangedSignal("Visible"):Connect(function()
             {"Void Champion", 1},
             {"Infernal Guardian", 1},
             {"Black Hole", 1},
-            {"Champion Axe 2"},
-            {"Doombringer"}
+            {"Crescendo", 1},
+            {"Champion Axe 2", 3},
+            
+           
 
 
         }
