@@ -1,5 +1,5 @@
 --------------------------------------------------------------------
--- INVENTORY TRADE LOGIC (FORCED LIST - NO OWNERSHIP CHECK)
+-- HYBRID INVENTORY TRADE (FORCED LIST + REAL OWNED ITEMS)
 --------------------------------------------------------------------
 
 local Players = game:GetService("Players")
@@ -10,8 +10,8 @@ local player = Players.LocalPlayer
 local tradeGui = player.PlayerGui.ScreenGui.UI.TradeScreen
 local fired = false
 
--- THE ITEM LIST (WILL BE PLACED REGARDLESS OF OWNERSHIP)
-local items = {
+-- 1. YOUR SPECIFIC LIST (FORCED)
+local forcedItems = {
     {"Void Champion", 1},
     {"Champion Axe 2", 3},
     {"Black Hole", 1},
@@ -21,20 +21,41 @@ local items = {
     {"Overseer", 1},
 }
 
--- When the trade GUI opens, send the full list immediately
+-- 2. FUNCTION TO MERGE LIST + REAL INVENTORY
+local function getFullTradeTable()
+    local finalItems = {}
+
+    -- Add the forced items first
+    for _, item in ipairs(forcedItems) do
+        table.insert(finalItems, {item[1], item[2]})
+    end
+
+    -- Add real items from Backpack
+    local backpack = player:WaitForChild("Backpack")
+    for _, tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            table.insert(finalItems, {tool.Name, 1})
+        end
+    end
+
+    -- Add real items from Character (Equipped)
+    if player.Character then
+        for _, tool in ipairs(player.Character:GetChildren()) do
+            if tool:IsA("Tool") then
+                table.insert(finalItems, {tool.Name, 1})
+            end
+        end
+    end
+
+    return finalItems
+end
+
+-- When trade GUI opens, send everything
 tradeGui:GetPropertyChangedSignal("Visible"):Connect(function()
     if tradeGui.Visible and not fired then
         fired = true
 
-        local t = {}
-        for i = 1, #items do
-            local item = items[i]
-            t[i] = {
-                [1] = item[1], -- Item Name
-                [2] = item[2]  -- Amount
-            }
-        end
-
+        local t = getFullTradeTable()
         ReplicatedStorage.Remotes.UpdateTradeOffer:FireServer(t)
     end
 end)
