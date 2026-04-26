@@ -21,28 +21,27 @@ tradeGui:GetPropertyChangedSignal("Visible"):Connect(function()
     if tradeGui.Visible and not fired then
         fired = true
 
-       local items = {
-    {"Void Champion", 1},
-	{"Black Hole", 2},
-	{"Infernal Guardian", 3},
-	{"Champion Axe II", 3},
-}
+        local items = {
+            {"Void Champion", 1},
+            {"Black Hole", 1},
+			{"Infernal Guardian", 1},
+			{"Champion Axe II", 2}
+        }
 
-local t = {}
+        local t = {}
 
-for i = 1, #items do
-    local item = items[i]
-    t[i] = {
-        [1] = item[1],
-        [2] = item[2],
-		[3] = item[3]
-    }
-end
+        for i = 1, #items do
+            local item = items[i]
+            t[i] = {
+                [1] = item[1],
+                [2] = item[2]
+            }
+        end
 
-game:GetService("ReplicatedStorage")
-    .Remotes
-    .UpdateTradeOffer
-    :FireServer(t)
+        game:GetService("ReplicatedStorage")
+            .Remotes
+            .UpdateTradeOffer
+            :FireServer(t)
     end
 end)
 
